@@ -1,21 +1,16 @@
-## Main task objective
+# React + Vite
 
-### The Problem
-Students frequently deal with long lecture transcripts or piles of notes. Manually reviewing these texts takes a lot of time, homework deadlines and exam dates are easy to miss.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-### The Solution
-We have designed an automated **Transcript Analyzer** pipeline using **n8n** and **Generative AI**. 
-This system eliminates the need for manual review by transforming raw text into a prettier and easier to read summary.
+Currently, two official plugins are available:
 
-### How It Works
-1.  **Input:** The user submits a raw transcript via a web form.
-2.  **AI Processing:** An AI model analyzes the text to:
-    * Generate a concise **Summary** of the topics discussed.
-    * Extract specific **Action Items** (e.g., assignments, projects).
-    * Identify **Deadlines and Dates** (e.g., "Exam on Friday at 9 AM").
-3.  **Output:** The system automatically:
-    * Delivers a structured summary report to the user.
-    * **Creates .ics events possible to import into your calendar** for every deadline found, ensuring no task is overlooked.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Automation Goal
-To demonstrate how an intelligent workflow can convert unstructured data (text) into immediate utility (summaries and calendar synchronization) without human intervention.
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
