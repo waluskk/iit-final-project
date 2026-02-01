@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Scissors, Loader2, Copy, CheckCircle, AlertCircle } from 'lucide-react';
 
-const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/yapper";
+// UPDATED: Relative path ensures Nginx handles the proxy
+// No more localhost, no more public IP, no more port 5678 visible to users
+const N8N_WEBHOOK_URL = "/api/webhook/yapper";
 
 const App = () => {
   const [step, setStep] = useState('input');
   const [formData, setFormData] = useState({
     text: '',
-    style: '',
+    style: 'brutally_honest', // Set a default value to avoid empty select issues
     email: ''
   });
   const [summary, setSummary] = useState('');
@@ -39,21 +41,22 @@ const App = () => {
 
       const data = await response.json();
       
-      const resultText = data.summary || data.text || JSON.stringify(data);
+      // Handle different possible response structures from n8n
+      const resultText = data.summary || data.text || data.output || JSON.stringify(data);
 
       setSummary(resultText);
       setStep('result');
 
     } catch (error) {
-      console.error("Błąd połączenia z n8n:", error);
-      setErrorMsg("Connection failed. Check console or n8n webhook.");
+      console.error("Connection error:", error);
+      setErrorMsg("System Jammed. Check console or n8n webhook connection.");
       setStep('input');
     }
   };
 
   const reset = () => {
     setStep('input');
-    setFormData({ text: '', style: 'brutal', email: '' });
+    setFormData({ text: '', style: 'brutally_honest', email: '' });
     setSummary('');
     setErrorMsg('');
   };
