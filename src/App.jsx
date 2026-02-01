@@ -19,7 +19,7 @@ const App = () => {
 
   // Symulacja działania
   const handleSubmit = async () => {
-    if (!formData.text) return alert("Don't be shy, yap a little.");
+    if (!formData.text) return alert("Don't be shy, paste the message...");
     setStep('loading');
 
     // Baza gotowych odpowiedzi
@@ -131,9 +131,6 @@ const App = () => {
 
       {/* --- WARSTWA 3: GŁÓWNA APLIKACJA --- */}
       <div className="w-full max-w-2xl border-2 border-[#333] bg-[#0a0a0a] p-8 relative z-30 shadow-[0_0_100px_rgba(0,0,0,0.9)]">
-        <div className="absolute top-0 left-0 bg-[#ccff00] text-black px-2 py-1 text-xs font-bold border-b-2 border-r-2 border-[#333]">
-          v1.0.0 // NO_YAP_ZONE
-        </div>
 
         <div className="mb-8 mt-4 text-center">
           <h1 className="text-4xl font-bold tracking-tighter uppercase mb-2">
