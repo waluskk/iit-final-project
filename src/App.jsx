@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Scissors, Loader2, Copy, CheckCircle, AlertCircle } from 'lucide-react';
 
-// --- KONFIGURACJA ---
-// Tutaj wklej swój adres Webhooka z n8n (typ: POST)
-const N8N_WEBHOOK_URL = "https://twoj-n8n-adres.com/webhook/sciezka";
+const N8N_WEBHOOK_URL = "https://yapper.waluskk.xyz:5678/webhook/yapper";
 
 const App = () => {
   const [step, setStep] = useState('input');
   const [formData, setFormData] = useState({
     text: '',
-    style: 'brutal',
+    style: '',
     email: ''
   });
   const [summary, setSummary] = useState('');
@@ -20,31 +18,27 @@ const App = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // --- PRAWDZIWY STRZAŁ DO N8N ---
   const handleSubmit = async () => {
-    if (!formData.text) return alert("Don't be shy, yap a little.");
+    if (!formData.text) return alert("Don't be shy, paste the message...");
     
     setStep('loading');
     setErrorMsg('');
 
     try {
-      // 1. Wysyłamy dane do n8n
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData) // Wysyła: { text: "...", style: "...", email: "..." }
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
       }
 
-      // 2. Odbieramy odpowiedź (n8n musi zwrócić JSON, np. { "summary": "Twój tekst..." })
       const data = await response.json();
       
-      // Zabezpieczenie: jeśli n8n zwróci obiekt z polem 'summary', to go użyj, jeśli sam tekst, to też ok
       const resultText = data.summary || data.text || JSON.stringify(data);
 
       setSummary(resultText);
@@ -53,7 +47,7 @@ const App = () => {
     } catch (error) {
       console.error("Błąd połączenia z n8n:", error);
       setErrorMsg("Connection failed. Check console or n8n webhook.");
-      setStep('input'); // Wracamy do formularza, żeby pokazać błąd
+      setStep('input');
     }
   };
 
@@ -64,7 +58,6 @@ const App = () => {
     setErrorMsg('');
   };
 
-  // Tekst animacji
   const bgText = `INITIALIZING YAP_PROTOCOL v1.0.2 // \nSCANNING INPUT STREAM... // \nDETECTING FLUFF... 89% DETECTED // \nENGAGING NEURAL CUTTERS // \nDELETING 'HOPE THIS EMAIL FINDS YOU WELL' // \nPURGING 'JUST CIRCLING BACK' // \nOPTIMIZING BANDWIDTH // \nCOMPRESSING THOUGHTS // \nGENERATING TL;DR // \nSYSTEM NOMINAL // \nNO CAP DETECTED // \nWAITING FOR INPUT // \n`.repeat(5);
 
   const VideoFrame = ({ src, label, positionClasses }) => (
@@ -97,7 +90,6 @@ const App = () => {
         .input-focus:focus { outline: none; border-color: #ccff00; box-shadow: 4px 4px 0px 0px #ccff00; }
       `}</style>
 
-      {/* TŁO ANIMOWANE */}
       <div className="fixed inset-0 z-0 pointer-events-none select-none flex justify-center items-center overflow-hidden">
           <div style={{ animation: 'vertical-scroll 60s linear infinite' }} className="text-center text-xs leading-loose text-[#ccff00]/20 whitespace-pre-line">
             {bgText}
@@ -105,17 +97,12 @@ const App = () => {
           </div>
       </div>
 
-      {/* KAMERY - Pamiętaj o podmianie linków na /1.mp4 itd. */}
       <VideoFrame label="CAM_01" positionClasses="top-0 left-0 border-r-2 border-b-2" src="/1.mp4" />
       <VideoFrame label="CAM_02" positionClasses="bottom-0 left-0 border-r-2 border-t-2" src="/2.mp4" />
       <VideoFrame label="CAM_03" positionClasses="top-0 right-0 border-l-2 border-b-2" src="/3.mp4" />
       <VideoFrame label="CAM_04" positionClasses="bottom-0 right-0 border-l-2 border-t-2" src="/4.mp4" />
 
-      {/* GŁÓWNA APKA */}
       <div className="w-full max-w-2xl border-2 border-[#333] bg-[#0a0a0a] p-8 relative z-30 shadow-[0_0_100px_rgba(0,0,0,0.9)]">
-        <div className="absolute top-0 left-0 bg-[#ccff00] text-black px-2 py-1 text-xs font-bold border-b-2 border-r-2 border-[#333]">
-          v1.0.0 // NO_YAP_ZONE
-        </div>
 
         <div className="mb-8 mt-4 text-center">
           <h1 className="text-4xl font-bold tracking-tighter uppercase mb-2">
@@ -124,7 +111,6 @@ const App = () => {
           <p className="text-gray-500 text-sm">Eliminate yapping from your life.</p>
         </div>
 
-        {/* BŁĄD POŁĄCZENIA */}
         {errorMsg && (
           <div className="mb-6 bg-red-900/20 border-l-4 border-red-500 p-4 flex items-center gap-3 text-red-200 text-xs">
             <AlertCircle className="w-5 h-5" />
@@ -143,10 +129,10 @@ const App = () => {
                 <label className="text-xs uppercase font-bold text-gray-400">Summary Vibe</label>
                 <div className="relative">
                   <select name="style" value={formData.style} onChange={handleInputChange} className="w-full bg-[#111] border-2 border-[#333] p-3 text-sm appearance-none input-focus cursor-pointer text-white">
-                    <option value="brutal">🔪 Brutally Honest</option>
-                    <option value="bullet">📝 Bullet Points</option>
-                    <option value="5yo">👶 Explain like I'm 5</option>
-                    <option value="slang">🧢 Gen-Z Slang</option>
+                    <option value="brutally_honest">🔪 Brutally Honest</option>
+                    <option value="bullet_points">📝 Bullet Points</option>
+                    <option value="explain_like_im_5">👶 Explain like I'm 5</option>
+                    <option value="gen-z_slang">🧢 Gen-Z Slang</option>
                   </select>
                   <div className="absolute right-4 top-4 pointer-events-none text-gray-500">▼</div>
                 </div>
@@ -157,7 +143,7 @@ const App = () => {
               </div>
             </div>
             <button onClick={handleSubmit} className="w-full bg-[#ccff00] text-black font-bold text-lg py-4 border-2 border-[#ccff00] hover:bg-transparent hover:text-[#ccff00] transition-all neo-box flex items-center justify-center gap-2 mt-4 cursor-pointer">
-              <Scissors className="w-5 h-5" /> SUMMARIZE THE YAP
+              <Scissors className="w-5 h-5" /> SUMMARIZE THE YAPPING
             </button>
           </div>
         )}
@@ -167,7 +153,7 @@ const App = () => {
             <Loader2 className="w-12 h-12 text-[#ccff00] animate-spin" />
             <div className="space-y-1">
               <p className="text-lg font-bold">Cutting the clutter...</p>
-              <p className="text-xs text-gray-500 font-mono">Waiting for n8n intelligence...</p>
+              <p className="text-xs text-gray-500 font-mono">Waiting for n8n automation to finish...</p>
             </div>
           </div>
         )}
