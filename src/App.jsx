@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Scissors, Loader2, Copy, CheckCircle } from 'lucide-react';
+import { Scissors, Loader2, Copy, CheckCircle, AlertCircle } from 'lucide-react';
+
+// --- KONFIGURACJA ---
+// Tutaj wklej swój adres Webhooka z n8n (typ: POST)
+const N8N_WEBHOOK_URL = "https://twoj-n8n-adres.com/webhook/sciezka";
 
 const App = () => {
-  // Stan aplikacji
   const [step, setStep] = useState('input');
   const [formData, setFormData] = useState({
     text: '',
@@ -10,56 +13,59 @@ const App = () => {
     email: ''
   });
   const [summary, setSummary] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  // Obsługa formularza
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Symulacja działania
+  // --- PRAWDZIWY STRZAŁ DO N8N ---
   const handleSubmit = async () => {
-    if (!formData.text) return alert("Don't be shy, paste the message...");
+    if (!formData.text) return alert("Don't be shy, yap a little.");
+    
     setStep('loading');
+    setErrorMsg('');
 
-    // Baza gotowych odpowiedzi
-    const fakeResponses = {
-      brutal: [
-        "TL;DR: Stop wasting time. Just do the work. Nobody cares about the excuses.",
-        "Real talk: This email could have been a 5-word SMS."
-      ],
-      bullet: [
-        "• The main point is missing.\n• Action required: ASAP.\n• Deadline: Yesterday.",
-        "• Too much fluff.\n• Focus on KPIs."
-      ],
-      "5yo": [
-        "Okay tiny human! 🧸 The bad man wants money.",
-        "It's like when you want a cookie 🍪 but mom says 'later'."
-      ],
-      slang: [
-        "No cap 🧢, this text is mid. Just ghost them.",
-        "Bestie, the tea is hot ☕ but the point is invalid."
-      ]
-    };
+    try {
+      // 1. Wysyłamy dane do n8n
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData) // Wysyła: { text: "...", style: "...", email: "..." }
+      });
 
-    const styleResponses = fakeResponses[formData.style] || fakeResponses['brutal'];
-    const randomResponse = styleResponses[Math.floor(Math.random() * styleResponses.length)];
-    const randomDelay = Math.floor(Math.random() * 2000) + 1500;
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
-    setTimeout(() => {
-      setSummary(randomResponse);
+      // 2. Odbieramy odpowiedź (n8n musi zwrócić JSON, np. { "summary": "Twój tekst..." })
+      const data = await response.json();
+      
+      // Zabezpieczenie: jeśli n8n zwróci obiekt z polem 'summary', to go użyj, jeśli sam tekst, to też ok
+      const resultText = data.summary || data.text || JSON.stringify(data);
+
+      setSummary(resultText);
       setStep('result');
-    }, randomDelay);
+
+    } catch (error) {
+      console.error("Błąd połączenia z n8n:", error);
+      setErrorMsg("Connection failed. Check console or n8n webhook.");
+      setStep('input'); // Wracamy do formularza, żeby pokazać błąd
+    }
   };
 
   const reset = () => {
     setStep('input');
     setFormData({ text: '', style: 'brutal', email: '' });
     setSummary('');
+    setErrorMsg('');
   };
 
-  // POPRAWKA: Dodano \n (nowa linia) na końcu każdego zdania, żeby tekst był pionowy!
-  const singleBlock = `INITIALIZING YAP_PROTOCOL v1.0.2 // \nSCANNING INPUT STREAM... // \nDETECTING FLUFF... 89% DETECTED // \nENGAGING NEURAL CUTTERS // \nDELETING 'HOPE THIS EMAIL FINDS YOU WELL' // \nPURGING 'JUST CIRCLING BACK' // \nOPTIMIZING BANDWIDTH // \nCOMPRESSING THOUGHTS // \nGENERATING TL;DR // \nSYSTEM NOMINAL // \nNO CAP DETECTED // \nWAITING FOR INPUT // \n`.repeat(5);
+  // Tekst animacji
+  const bgText = `INITIALIZING YAP_PROTOCOL v1.0.2 // \nSCANNING INPUT STREAM... // \nDETECTING FLUFF... 89% DETECTED // \nENGAGING NEURAL CUTTERS // \nDELETING 'HOPE THIS EMAIL FINDS YOU WELL' // \nPURGING 'JUST CIRCLING BACK' // \nOPTIMIZING BANDWIDTH // \nCOMPRESSING THOUGHTS // \nGENERATING TL;DR // \nSYSTEM NOMINAL // \nNO CAP DETECTED // \nWAITING FOR INPUT // \n`.repeat(5);
 
   const VideoFrame = ({ src, label, positionClasses }) => (
     <div className={`fixed ${positionClasses} w-[20%] h-[50%] border-[#333] border-2 bg-black z-10 hidden xl:block`}>
@@ -82,55 +88,34 @@ const App = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
         body { font-family: 'Space Mono', monospace; }
-        
-        /* Animacja pionowa */
         @keyframes vertical-scroll {
           0% { transform: translateY(0); }
           100% { transform: translateY(-50%); }
         }
-        
         .neo-box { box-shadow: 6px 6px 0px 0px #333; transition: all 0.2s ease; }
         .neo-box:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #333; }
         .input-focus:focus { outline: none; border-color: #ccff00; box-shadow: 4px 4px 0px 0px #ccff00; }
       `}</style>
 
-      {/* --- WARSTWA 1: ANIMACJA TEKSTU (ŚRODEK) --- */}
+      {/* TŁO ANIMOWANE */}
       <div className="fixed inset-0 z-0 pointer-events-none select-none flex justify-center items-center overflow-hidden">
-          {/* Kontener animacji */}
-          <div 
-            style={{ animation: 'vertical-scroll 60s linear infinite' }} 
-            className="text-center text-xs leading-loose text-[#ccff00]/20 whitespace-pre-line"
-          >
-            {/* Renderujemy ten sam blok tekstu 2 razy, żeby animacja była płynna (jak jeden się kończy, drugi wchodzi) */}
-            {singleBlock}
-            {singleBlock}
+          <div style={{ animation: 'vertical-scroll 60s linear infinite' }} className="text-center text-xs leading-loose text-[#ccff00]/20 whitespace-pre-line">
+            {bgText}
+            {bgText}
           </div>
       </div>
 
-      {/* --- WARSTWA 2: 4 FILMY (RAMKI PO BOKACH) --- */}
-      <VideoFrame 
-        label="CAM_01" 
-        positionClasses="top-0 left-0 border-r-2 border-b-2" 
-        src="/1.mp4" 
-      />
-      <VideoFrame 
-        label="CAM_02" 
-        positionClasses="bottom-0 left-0 border-r-2 border-t-2" 
-        src="/2.mp4" 
-      />
-      <VideoFrame 
-        label="CAM_03" 
-        positionClasses="top-0 right-0 border-l-2 border-b-2" 
-        src="/3.mp4" 
-      />
-      <VideoFrame 
-        label="CAM_04" 
-        positionClasses="bottom-0 right-0 border-l-2 border-t-2" 
-        src="/4.mp4" 
-      />
+      {/* KAMERY - Pamiętaj o podmianie linków na /1.mp4 itd. */}
+      <VideoFrame label="CAM_01" positionClasses="top-0 left-0 border-r-2 border-b-2" src="/1.mp4" />
+      <VideoFrame label="CAM_02" positionClasses="bottom-0 left-0 border-r-2 border-t-2" src="/2.mp4" />
+      <VideoFrame label="CAM_03" positionClasses="top-0 right-0 border-l-2 border-b-2" src="/3.mp4" />
+      <VideoFrame label="CAM_04" positionClasses="bottom-0 right-0 border-l-2 border-t-2" src="/4.mp4" />
 
-      {/* --- WARSTWA 3: GŁÓWNA APLIKACJA --- */}
+      {/* GŁÓWNA APKA */}
       <div className="w-full max-w-2xl border-2 border-[#333] bg-[#0a0a0a] p-8 relative z-30 shadow-[0_0_100px_rgba(0,0,0,0.9)]">
+        <div className="absolute top-0 left-0 bg-[#ccff00] text-black px-2 py-1 text-xs font-bold border-b-2 border-r-2 border-[#333]">
+          v1.0.0 // NO_YAP_ZONE
+        </div>
 
         <div className="mb-8 mt-4 text-center">
           <h1 className="text-4xl font-bold tracking-tighter uppercase mb-2">
@@ -139,17 +124,19 @@ const App = () => {
           <p className="text-gray-500 text-sm">Eliminate yapping from your life.</p>
         </div>
 
+        {/* BŁĄD POŁĄCZENIA */}
+        {errorMsg && (
+          <div className="mb-6 bg-red-900/20 border-l-4 border-red-500 p-4 flex items-center gap-3 text-red-200 text-xs">
+            <AlertCircle className="w-5 h-5" />
+            {errorMsg}
+          </div>
+        )}
+
         {step === 'input' && (
           <div className="space-y-6">
             <div className="flex flex-col gap-2">
               <label className="text-xs uppercase font-bold text-gray-400">The Yap (Paste it here)</label>
-              <textarea
-                name="text"
-                value={formData.text}
-                onChange={handleInputChange}
-                placeholder="Paste the overly long email/essay/rant here..."
-                className="w-full h-48 bg-[#111] border-2 border-[#333] p-4 text-sm resize-none input-focus transition-all text-white placeholder-gray-600"
-              />
+              <textarea name="text" value={formData.text} onChange={handleInputChange} placeholder="Paste the overly long email/essay/rant here..." className="w-full h-48 bg-[#111] border-2 border-[#333] p-4 text-sm resize-none input-focus transition-all text-white placeholder-gray-600" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
@@ -180,7 +167,7 @@ const App = () => {
             <Loader2 className="w-12 h-12 text-[#ccff00] animate-spin" />
             <div className="space-y-1">
               <p className="text-lg font-bold">Cutting the clutter...</p>
-              <p className="text-xs text-gray-500 font-mono">Simulating n8n heavy lifting...</p>
+              <p className="text-xs text-gray-500 font-mono">Waiting for n8n intelligence...</p>
             </div>
           </div>
         )}
