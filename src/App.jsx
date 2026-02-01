@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Scissors, Loader2, Copy, CheckCircle, AlertCircle } from 'lucide-react';
 
-const N8N_WEBHOOK_URL = "https://yapper.waluskk.xyz:5678/webhook/yapper";
+const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/yapper";
 
 const App = () => {
   const [step, setStep] = useState('input');
