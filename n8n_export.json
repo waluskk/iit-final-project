@@ -1,0 +1,168 @@
+{
+  "name": "PROJECT YAPPER",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "yapper",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ca4b9806-5cf4-4655-a52b-d25ea3aaead3",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "summary-webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{\n  {\n    \"status\": \"success\",\n    \"summary\": $json.summary\n  }\n}}",
+        "options": {}
+      },
+      "id": "9d3ade22-d7f0-465b-aec7-1f50f60a5714",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        784,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemma-3-27b-it",
+          "mode": "list",
+          "cachedResultName": "models/gemma-3-27b-it"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert message summarizer API.\n\n### INPUTS\n**Style/Tone:** {{ $json.body.style }}\n**Content:**\n\"\"\"\n{{ $json.body.text }}\n\"\"\"\n\n### INSTRUCTIONS\n1. Analyze the \"Content\" and generate a summary that VERY STRICTLY adheres to the \"Style/Tone\" provided.\n2. If the style requests a specific format (like bullet points), ensure the text is formatted correctly with JSON NEW LINE (\\n)\n3. Your output MUST be a valid, raw JSON object.\n4. Do NOT output markdown formatting (like ```json ... ```).\n5. Do NOT output conversational text (like \"Here is the summary\").\n\n### REQUIRED OUTPUT SCHEMA\n{\n  \"summary\": \"The generated summary text goes here\"\n}"
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "00c63c46-7238-42f0-b4b6-0874245a18e9",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "W9UMtMFYCM1SeUp0",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  const rawText = item.json.candidates[0].content.parts[0].text;\n\n  const firstBracket = rawText.indexOf('{');\n  const lastBracket = rawText.lastIndexOf('}') + 1;\n\n  const cleanString = rawText.substring(firstBracket, lastBracket);\n\n  try {\n    const parsedData = JSON.parse(cleanString);\n\n    return {\n      json: parsedData\n    };\n  } catch (error) {\n    return {\n      json: { error: \"Failed to parse JSON\", raw: rawText }\n    };\n  }\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "a3dcbe6b-1291-4a20-9c46-7d46d882f977",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "from": "abuse@waluskk.xyz",
+        "to": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "Your YAPPER™ summary is ready!",
+        "html": "=<div style=\"background-color: #000000; font-family: 'Courier New', Courier, monospace; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #e5e5e5; border: 1px solid #333;\">\n\n  <h1 style=\"font-size: 28px; font-weight: 700; margin: 0 0 5px 0; letter-spacing: -1px; color: #ffffff;\">\n    PROJECT <span style=\"color: #CCFF00; text-decoration: underline; text-decoration-style: wavy; text-decoration-color: #CCFF00;\">YAPPER</span>\n  </h1>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px;\">\n    // Eliminate yapping from your life.\n  </p>\n\n  <div style=\"border: 1px solid #333; background-color: #0a0a0a; padding: 25px;\">\n    \n    <div style=\"border-bottom: 1px dashed #333; padding-bottom: 10px; margin-bottom: 15px; font-size: 10px; color: #444; display: flex; justify-content: space-between;\">\n      <span>STATUS: CONDENSED</span>\n    </div>\n\n    <div style=\"font-size: 14px; line-height: 1.6; color: #ffffff;\">\n      <span style=\"color: #CCFF00; margin-right: 10px;\">></span>\n      {{ $json.summary }}\n    </div>\n\n  </div>\n\n  <div style=\"margin-top: 30px; text-align: center;\">\n    <div style=\"background-color: #CCFF00; color: #000000; font-weight: 900; font-size: 14px; padding: 15px; display: block; text-transform: uppercase; letter-spacing: 1px;\">\n      <span style=\"margin-right: 10px;\">✂️</span> YAP STATUS: REMOVED\n    </div>\n    \n    <p style=\"margin-top: 20px; font-size: 10px; color: #444;\">\n      SYSTEM_ID: AI_PROVIDED\n    </p>\n  </div>\n\n</div>",
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-resend.resend",
+      "typeVersion": 1,
+      "position": [
+        784,
+        0
+      ],
+      "id": "7214ac34-bc57-4566-9542-9b64cbeacbd6",
+      "name": "Send an email",
+      "credentials": {
+        "resendApi": {
+          "id": "1W0QTOV2hY6J7Rlh",
+          "name": "Resend account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send an email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an email": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Sarajevo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "ec5676c1-3183-4c31-8b12-d884b0bfe956",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dd490731a18a84be1a925f21ca235e8f9701a6606141b00df794e74fc9dab803"
+  },
+  "id": "e699bP2H-CDMMFlZPyqlX",
+  "tags": []
+}
