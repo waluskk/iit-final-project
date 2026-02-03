@@ -1,7 +1,7 @@
 # Documentation: AI-Powered automated summarizer system
 
 ## Overview
-**Project Name:** Project Yapper (AI-Summarizer)
+**Project Name:** Project Yapper (AI-Summarizer)  
 **Repository:** [https://github.com/waluskk/iit-final-project](https://github.com/waluskk/iit-final-project)  
 **Live Deployment:** [https://yapper.waluskk.xyz](https://yapper.waluskk.xyz)
 
@@ -37,7 +37,7 @@ The system follows a Client-Server architecture, utilizing **n8n** for backend.
     * **Email:** The **"Send an email"** node dispatches the summary to the user's provided email address.
     * **Frontend Response:** The **"Respond to Webhook"** node returns the summary to the website, displaying it immediately to the user.
 
-> **[n8n automation graph screenshot](doc2.png)**
+> **![n8n automation graph screenshot](doc2.png)**
 > *The n8n automation graph showing the flow from Webhook -> AI Model -> Javascript Parsing -> Email & Response.*
 
 ---
@@ -47,10 +47,10 @@ The system follows a Client-Server architecture, utilizing **n8n** for backend.
 The core intelligence of the system is driven by **Google's Generative AI Model** (Gemma/Gemini).
 
 * **Intelligent Synthesis:** Unlike simple text analyzing algorithms, the AI model utilizes Language Processing to "read" the text and understand context.
-* **Prompt Engineering:** The system uses a specific, fabricated prompt configured within the n8n node. This ensures the AI returns a summary in a specific style (e.g., professional, custom (slang), or bulleted) rather than a generic output.
+* **Prompt Engineering:** The system uses a specific, fabricated prompt configured within the n8n node. This ensures the AI returns a summary in a specific style [e.g., professional, custom (slang), or bulleted] rather than a generic output.
 * **Integration:** The AI serves as a data transformation step within the automation pipeline, converting unstructured text input into structured, meaningful insights.
 
-> **[Screenshot of the AI Node Configuration](doc3.png)**
+> **![Screenshot of the AI Node Configuration](doc3.png)**
 > *The configuration panel for the AI model, showing the prompt logic used to style the output.*
 
 ---
@@ -74,7 +74,7 @@ To test the system functionality without local installation:
     * **On-Screen:** The summary should appear on the webpage after a brief loading period.
     * **Email:** Check the inbox of the email address provided to confirm receipt of the summary.
 
-> **[Screenshot of the Website UI](doc4.png)**
+> **![Screenshot of the Website UI](doc4.png)**
 > *Caption: The user interface displaying a successful summary response.*
 
 >[Proofread by Gemini 3 PRO]
