@@ -50,7 +50,7 @@ The core intelligence of the system is driven by **Google's Generative AI Model*
 * **Prompt Engineering:** The system uses a specific, fabricated prompt configured within the n8n node. This ensures the AI returns a summary in a specific style [e.g., professional, custom (slang), or bulleted] rather than a generic output.
 * **Integration:** The AI serves as a data transformation step within the automation pipeline, converting unstructured text input into structured, meaningful insights.
 
-> **![Screenshot of the AI Node Configuration](doc.png)**
+> **![Screenshot of the AI Node Configuration](doc3.png)**
 > *The configuration panel for the AI model, showing the prompt logic used to style the output.*
 
 ---
